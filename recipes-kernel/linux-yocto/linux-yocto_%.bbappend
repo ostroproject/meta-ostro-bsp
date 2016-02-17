@@ -33,6 +33,13 @@ SRC_URI_append_intel-core2-32 = " file://bh1750.cfg"
 SRC_URI_append_intel-corei7-64 = " file://0001-iio-accel-add-Freescale-MMA7455L-MMA7456L-3-axis-acc.patch"
 SRC_URI_append_intel-corei2-32 = " file://0001-iio-accel-add-Freescale-MMA7455L-MMA7456L-3-axis-acc.patch"
 
+# backport LIS2DH Accel sensor support on Minnow Max and NUC
+SRC_URI_append_intel-corei7-64 = " file://0001-iio-st-accel-add-support-for-lis2dh12.patch"
+SRC_URI_append_intel-corei2-32 = " file://0001-iio-st-accel-add-support-for-lis2dh12.patch"
+
+# backport LIS2DH Accel sensor support on Galileo Gen 2
+SRC_URI_append_intel-quark = " file://0001-iio-st-accel-add-support-for-lis2dh12.patch"
+
 # backport MMA7455 Accel sensor support on Galileo Gen 2
 SRC_URI_append_intel-quark = " file://0001-iio-accel-add-Freescale-MMA7455L-MMA7456L-3-axis-acc.patch"
 

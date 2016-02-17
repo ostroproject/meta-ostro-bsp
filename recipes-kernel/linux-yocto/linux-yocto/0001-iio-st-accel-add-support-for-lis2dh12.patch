@@ -1,0 +1,115 @@
+From af477b979385d7bf47104cb66668ab06994e713f Mon Sep 17 00:00:00 2001
+From: Yong Li <yong.b.li@intel.com>
+Date: Wed, 17 Feb 2016 15:29:25 +0800
+Subject: [PATCH] iio: st-accel: add support for lis2dh12
+
+This commit add support for STMicroelectronics lis2dh12 accelerometer.
+Datasheet for this device can be found here:
+
+http://www.st.com/st-web-ui/static/active/en/resource/technical/
+document/datasheet/DM00091513.pdf
+
+Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
+Acked-by: Denis Ciocca <denis.ciocca@st.com>
+Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+
+Fixes: IOTOS-757/partial
+Upstream-Status:Backport[https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/commit/drivers/iio/accel/st_accel_i2c.c?id=34dc578d99449a83dcb0f5ef4444215590183af4]
+
+Signed-off-by: Yong Li <yong.b.li@intel.com>
+---
+ Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
+ drivers/iio/accel/Kconfig                            | 2 +-
+ drivers/iio/accel/st_accel.h                         | 1 +
+ drivers/iio/accel/st_accel_core.c                    | 1 +
+ drivers/iio/accel/st_accel_i2c.c                     | 4 ++++
+ drivers/iio/accel/st_accel_spi.c                     | 1 +
+ 6 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+index d2aaca9..a24e273 100644
+--- a/Documentation/devicetree/bindings/iio/st-sensors.txt
++++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+@@ -34,6 +34,7 @@ Accelerometers:
+ - st,lsm303dl-accel
+ - st,lsm303dlm-accel
+ - st,lsm330-accel
++- st,lis2dh12-accel
+ 
+ Gyroscopes:
+ - st,l3g4200d-gyro
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index dd4069b..ce5e74f 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -56,7 +56,7 @@ config IIO_ST_ACCEL_3AXIS
+ 	help
+ 	  Say yes here to build support for STMicroelectronics accelerometers:
+ 	  LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
+-	  LIS331DLH, LSM303DL, LSM303DLM, LSM330.
++	  LIS331DLH, LSM303DL, LSM303DLM, LSM330, LIS2DH12.
+ 
+ 	  This driver can also be built as a module. If so, these modules
+ 	  will be created:
+diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+index 7ee9724..f586cc6 100644
+--- a/drivers/iio/accel/st_accel.h
++++ b/drivers/iio/accel/st_accel.h
+@@ -25,6 +25,7 @@
+ #define LSM303DLH_ACCEL_DEV_NAME	"lsm303dlh_accel"
+ #define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm_accel"
+ #define LSM330_ACCEL_DEV_NAME		"lsm330_accel"
++#define LIS2DH12_ACCEL_DEV_NAME		"lis2dh12_accel"
+ 
+ /**
+ * struct st_sensors_platform_data - default accel platform data
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 2ae7150..752b32b 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -192,6 +192,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			[2] = LSM330D_ACCEL_DEV_NAME,
+ 			[3] = LSM330DL_ACCEL_DEV_NAME,
+ 			[4] = LSM330DLC_ACCEL_DEV_NAME,
++			[5] = LIS2DH12_ACCEL_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
+ 		.odr = {
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index 6b720c1..f1641e8 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -64,6 +64,9 @@ static const struct of_device_id st_accel_of_match[] = {
+ 		.compatible = "st,lsm330-accel",
+ 		.data = LSM330_ACCEL_DEV_NAME,
+ 	},
++	{	.compatible = "st,lis2dh12-accel",
++		.data = LIS2DH12_ACCEL_DEV_NAME,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_accel_of_match);
+@@ -112,6 +115,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+ 	{ LSM303DL_ACCEL_DEV_NAME },
+ 	{ LSM303DLM_ACCEL_DEV_NAME },
+ 	{ LSM330_ACCEL_DEV_NAME },
++	{ LIS2DH12_ACCEL_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
+index 12ec293..9d8d0cc 100644
+--- a/drivers/iio/accel/st_accel_spi.c
++++ b/drivers/iio/accel/st_accel_spi.c
+@@ -57,6 +57,7 @@ static const struct spi_device_id st_accel_id_table[] = {
+ 	{ LSM303DL_ACCEL_DEV_NAME },
+ 	{ LSM303DLM_ACCEL_DEV_NAME },
+ 	{ LSM330_ACCEL_DEV_NAME },
++	{ LIS2DH12_ACCEL_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, st_accel_id_table);
+-- 
+2.1.4
+
