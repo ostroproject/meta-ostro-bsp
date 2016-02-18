@@ -1,0 +1,132 @@
+From bdea6e5aa84026e532ea9e4a43f8170d25c1bbfe Mon Sep 17 00:00:00 2001
+From: Yong Li <yong.b.li@intel.com>
+Date: Thu, 18 Feb 2016 11:44:28 +0800
+Subject: [PATCH] iio: remove gpio interrupt probing from drivers that use a
+ single interrupt
+
+Backport from kernel 4.4 to support Accel sensor MMA9553/BMA222E/BMA255/BMA280
+Fixes: IOTOS-757/partial
+Upstream-Status:Backport[https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/commit/?id=0f0796509c07c1c7b77671c05b2955beb245e367]
+
+Signed-off-by: Yong Li <yong.b.li@intel.com>
+---
+ drivers/iio/accel/bmc150-accel.c | 32 +-------------------------------
+ drivers/iio/accel/mma9553.c      | 31 +------------------------------
+ 2 files changed, 2 insertions(+), 61 deletions(-)
+
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index bf827d0..1f91dcf 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -38,7 +38,6 @@
+ 
+ #define BMC150_ACCEL_DRV_NAME			"bmc150_accel"
+ #define BMC150_ACCEL_IRQ_NAME			"bmc150_accel_event"
+-#define BMC150_ACCEL_GPIO_NAME			"bmc150_accel_int"
+ 
+ #define BMC150_ACCEL_REG_CHIP_ID		0x00
+ 
+@@ -1418,32 +1417,6 @@ static const char *bmc150_accel_match_acpi_device(struct device *dev, int *data)
+ 	return dev_name(dev);
+ }
+ 
+-static int bmc150_accel_gpio_probe(struct i2c_client *client,
+-					struct bmc150_accel_data *data)
+-{
+-	struct device *dev;
+-	struct gpio_desc *gpio;
+-	int ret;
+-
+-	if (!client)
+-		return -EINVAL;
+-
+-	dev = &client->dev;
+-
+-	/* data ready gpio interrupt pin */
+-	gpio = devm_gpiod_get_index(dev, BMC150_ACCEL_GPIO_NAME, 0, GPIOD_IN);
+-	if (IS_ERR(gpio)) {
+-		dev_err(dev, "Failed: gpio get index\n");
+-		return PTR_ERR(gpio);
+-	}
+-
+-	ret = gpiod_to_irq(gpio);
+-
+-	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+-
+-	return ret;
+-}
+-
+ static const struct {
+ 	int intr;
+ 	const char *name;
+@@ -1636,10 +1609,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &bmc150_accel_info;
+ 
+-	if (client->irq < 0)
+-		client->irq = bmc150_accel_gpio_probe(client, data);
+-
+-	if (client->irq >= 0) {
++	if (client->irq > 0) {
+ 		ret = devm_request_threaded_irq(
+ 						&client->dev, client->irq,
+ 						bmc150_accel_irq_handler,
+diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+index 365a109..3bb3192 100644
+--- a/drivers/iio/accel/mma9553.c
++++ b/drivers/iio/accel/mma9553.c
+@@ -26,7 +26,6 @@
+ 
+ #define MMA9553_DRV_NAME			"mma9553"
+ #define MMA9553_IRQ_NAME			"mma9553_event"
+-#define MMA9553_GPIO_NAME			"mma9553_int"
+ 
+ /* Pedometer configuration registers (R/W) */
+ #define MMA9553_REG_CONF_SLEEPMIN		0x00
+@@ -1099,31 +1098,6 @@ static irqreturn_t mma9553_event_handler(int irq, void *private)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static int mma9553_gpio_probe(struct i2c_client *client)
+-{
+-	struct device *dev;
+-	struct gpio_desc *gpio;
+-	int ret;
+-
+-	if (!client)
+-		return -EINVAL;
+-
+-	dev = &client->dev;
+-
+-	/* data ready gpio interrupt pin */
+-	gpio = devm_gpiod_get_index(dev, MMA9553_GPIO_NAME, 0, GPIOD_IN);
+-	if (IS_ERR(gpio)) {
+-		dev_err(dev, "acpi gpio get index failed\n");
+-		return PTR_ERR(gpio);
+-	}
+-
+-	ret = gpiod_to_irq(gpio);
+-
+-	dev_dbg(dev, "gpio resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+-
+-	return ret;
+-}
+-
+ static const char *mma9553_match_acpi_device(struct device *dev)
+ {
+ 	const struct acpi_device_id *id;
+@@ -1172,10 +1146,7 @@ static int mma9553_probe(struct i2c_client *client,
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &mma9553_info;
+ 
+-	if (client->irq < 0)
+-		client->irq = mma9553_gpio_probe(client);
+-
+-	if (client->irq >= 0) {
++	if (client->irq > 0) {
+ 		ret = devm_request_threaded_irq(&client->dev, client->irq,
+ 						mma9553_irq_handler,
+ 						mma9553_event_handler,
+-- 
+2.1.4
+

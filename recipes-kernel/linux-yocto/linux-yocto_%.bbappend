@@ -37,6 +37,13 @@ SRC_URI_append_intel-corei2-32 = " file://0001-iio-accel-add-Freescale-MMA7455L-
 SRC_URI_append_intel-corei7-64 = " file://0001-iio-st-accel-add-support-for-lis2dh12.patch"
 SRC_URI_append_intel-corei2-32 = " file://0001-iio-st-accel-add-support-for-lis2dh12.patch"
 
+# backport BMA222E/BMA255/BMA280 Accel sensor support on Minnow Max and NUC
+SRC_URI_append_intel-corei7-64 = " file://0001-iio-remove-gpio-interrupt-probing-from-drivers-that-.patch"
+SRC_URI_append_intel-corei2-32 = " file://0001-iio-remove-gpio-interrupt-probing-from-drivers-that-.patch"
+
+# backport BMA222E/BMA255/BMA280 Accel sensor support on Galileo Gen 2
+SRC_URI_append_intel-quark = " file://0001-iio-remove-gpio-interrupt-probing-from-drivers-that-.patch"
+
 # backport LIS2DH Accel sensor support on Galileo Gen 2
 SRC_URI_append_intel-quark = " file://0001-iio-st-accel-add-support-for-lis2dh12.patch"
 
