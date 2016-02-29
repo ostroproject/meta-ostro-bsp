@@ -13,6 +13,19 @@ SRC_URI = "file://spi-minnow-cc2520.c \
            file://spi-minnow-board.c \
            file://spi-minnow-board.h \
            file://Makefile \
+           file://cc2520-minnow.conf.sample \
+           file://at86rf230-minnow.conf.sample \
            "
+
+FILES_${PN} += " /usr/lib/modules-load.d/cc2520-minnow.conf.sample \
+                 /usr/lib/modules-load.d/at86rf230-minnow.conf.sample \
+               "
+
+# Sample configuring file
+do_install_append () {
+  install -d ${D}${libdir}/modules-load.d
+  install -m 0655 cc2520-minnow.conf.sample ${D}${libdir}/modules-load.d/
+  install -m 0655 at86rf230-minnow.conf.sample ${D}${libdir}/modules-load.d/
+}
 
 S = "${WORKDIR}"
