@@ -20,5 +20,3 @@ do_install () {
 }
 
 BBCLASSEXTEND = "native nativesdk"
-
-COMPATIBLE_MACHINE = "edison"
