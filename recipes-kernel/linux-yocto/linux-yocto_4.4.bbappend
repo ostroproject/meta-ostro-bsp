@@ -3,6 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/linux-yocto:"
 # version overrides
 LINUX_VERSION_corei7-64-intel-common = "4.4.3"
 SRCREV_machine_corei7-64-intel-common = "1a72cec834de2c80b5563f8afbeea7664fd5ee05"
+SRCREV_machine_i586-nlp-32-intel-common = "0148b3601f29b159b4f84c1478ff1859bbd48efe"
 
 ### linux-stable/linux-4.4.y backports
 
