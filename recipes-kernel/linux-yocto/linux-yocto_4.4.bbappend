@@ -170,3 +170,24 @@ SRC_URI_append_intel-corei7-64 = " \
     file://nspawn-firewall.cfg \
     file://nspawn-devpts.cfg \
 "
+
+# Overlayfs deadlock fix.
+SRC_URI_append = " \
+    file://0001-ovl-setxattr-don-t-deadlock-when-called-from-ima_fix.patch \
+"
+
+SRC_URI_append_edison = " \
+    file://0001-ovl-setxattr-don-t-deadlock-when-called-from-ima_fix.patch \
+"
+
+SRC_URI_append_intel-quark = " \
+    file://0001-ovl-setxattr-don-t-deadlock-when-called-from-ima_fix.patch \
+"
+
+SRC_URI_append_intel-core2-32 = " \
+    file://0001-ovl-setxattr-don-t-deadlock-when-called-from-ima_fix.patch \
+"
+
+SRC_URI_append_intel-corei7-64 = " \
+    file://0001-ovl-setxattr-don-t-deadlock-when-called-from-ima_fix.patch \
+"
