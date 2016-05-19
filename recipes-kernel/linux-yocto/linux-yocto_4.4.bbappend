@@ -134,3 +134,39 @@ SRC_URI_append_edison = " file://0002-edison-capabilities-add-a-securebit-to-dis
 
 # Backport AK8975 iio device name support
 SRC_URI_append_edison = " file://0001-iio-ak8975-Add-device-name.patch"
+
+# Enable the necessary options for systemd-nspawn'd containers.
+SRC_URI_append = " \
+    file://nspawn-fs.cfg \
+    file://nspawn-netdev.cfg \
+    file://nspawn-firewall.cfg \
+    file://nspawn-devpts.cfg \
+"
+
+SRC_URI_append_edison = " \
+    file://nspawn-fs.cfg \
+    file://nspawn-netdev.cfg \
+    file://nspawn-firewall.cfg \
+    file://nspawn-devpts.cfg \
+"
+
+SRC_URI_append_intel-quark = " \
+    file://nspawn-fs.cfg \
+    file://nspawn-netdev.cfg \
+    file://nspawn-firewall.cfg \
+    file://nspawn-devpts.cfg \
+"
+
+SRC_URI_append_intel-core2-32 = " \
+    file://nspawn-fs.cfg \
+    file://nspawn-netdev.cfg \
+    file://nspawn-firewall.cfg \
+    file://nspawn-devpts.cfg \
+"
+
+SRC_URI_append_intel-corei7-64 = " \
+    file://nspawn-fs.cfg \
+    file://nspawn-netdev.cfg \
+    file://nspawn-firewall.cfg \
+    file://nspawn-devpts.cfg \
+"
